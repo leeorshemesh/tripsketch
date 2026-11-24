@@ -1,7 +1,7 @@
 # TripSketch — internship build writeup (draft)
 
-**Live URL:** _(fill after deploy — https://tripsketch.app.space or renamed)_  
-**Repository:** _(this project / cloud `space` remote after first deploy)_
+**Live URL:** https://tripsketch.app.space  
+**Repository:** DeepSpace cloud source for `tripsketch` (`space` remote → `https://deploy-worker.deep.space/api/repo/app_01M87ZRJVHF4MG6VG6X7DN8K2M`). App id `app_01M87ZRJVHF4MG6VG6X7DN8K2M`. Viewable from https://dashboard.deep.space
 
 ## What I built
 

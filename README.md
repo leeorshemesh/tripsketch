@@ -2,7 +2,7 @@
 
 Turn a **destination + vibe** into a researched day-by-day itinerary with a generated travel cover — built on the [DeepSpace](https://docs.deep.space/) SDK.
 
-**Live:** `https://tripsketch.app.space` (after deploy)
+**Live:** https://tripsketch.app.space
 
 ## Important path
 
