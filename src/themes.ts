@@ -22,16 +22,6 @@ export const THEMES = [
     label: 'Harbor',
     description: 'TripSketch travel theme — cool stone, teal accent, dusk hero.',
   },
-  {
-    id: 'slate',
-    label: 'Slate',
-    description: 'Neutral dark placeholder.',
-  },
-  {
-    id: 'paper',
-    label: 'Paper',
-    description: 'Light example theme.',
-  },
 ] as const
 
 export type ThemeId = (typeof THEMES)[number]['id']

@@ -3,8 +3,12 @@ import { enqueueJob } from 'deepspace/worker'
 import type { Env } from '../../worker'
 import {
   DAILY_GENERATE_LIMIT,
+  MAX_TRIP_DAYS,
+  MIN_TRIP_DAYS,
+  TRIP_PACES,
   TRIP_VIBES,
   makeShareSlug,
+  type TripPace,
   type TripVibe,
 } from '../lib/trip-types'
 import type { GenerateTripPayload } from '../server/jobs/generateTripJob'
@@ -12,15 +16,29 @@ import type { GenerateTripPayload } from '../server/jobs/generateTripJob'
 const startTripGenerate: ActionHandler<Env> = async ({ userId, params, tools, env }) => {
   const destination = String(params.destination ?? '').trim()
   const vibeRaw = String(params.vibe ?? '').trim()
-  const daysCount = Math.max(1, Math.min(7, Number(params.daysCount) || 3))
+  const paceRaw = String(params.pace ?? 'balanced').trim()
+  const daysCount = Math.max(
+    MIN_TRIP_DAYS,
+    Math.min(MAX_TRIP_DAYS, Number(params.daysCount) || 3),
+  )
 
   if (destination.length < 2 || destination.length > 120) {
     return { success: false, error: 'Enter a destination (2–120 characters).' }
   }
   if (!TRIP_VIBES.includes(vibeRaw as TripVibe)) {
-    return { success: false, error: 'Pick a vibe: foodie, outdoors, culture, or chill.' }
+    return {
+      success: false,
+      error: `Pick a vibe: ${TRIP_VIBES.join(', ')}.`,
+    }
+  }
+  if (!TRIP_PACES.includes(paceRaw as TripPace)) {
+    return {
+      success: false,
+      error: `Pick a pace: ${TRIP_PACES.join(', ')}.`,
+    }
   }
   const vibe = vibeRaw as TripVibe
+  const pace = paceRaw as TripPace
 
   // Daily cap — owner-billed integrations; prevent click-loop spend.
   const existing = await tools.query<{ status?: string }>('trips', {
@@ -50,6 +68,7 @@ const startTripGenerate: ActionHandler<Env> = async ({ userId, params, tools, en
     title: `${destination} · ${vibe}`,
     destination,
     vibe,
+    pace,
     daysCount,
     status: 'generating',
     statusMessage: 'Queued…',
@@ -73,6 +92,7 @@ const startTripGenerate: ActionHandler<Env> = async ({ userId, params, tools, en
     userId,
     destination,
     vibe,
+    pace,
     daysCount,
   }
 

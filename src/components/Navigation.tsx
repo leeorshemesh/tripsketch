@@ -75,7 +75,7 @@ export default function Navigation() {
             to="/home"
             className="font-[family-name:var(--font-display)] text-sm font-semibold tracking-wide text-foreground"
           >
-            TripSketch
+            {APP_NAME}
           </Link>
 
           <div className="hidden items-center md:flex">{visibleNav.map(navLink)}</div>

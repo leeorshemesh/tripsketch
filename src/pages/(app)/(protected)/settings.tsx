@@ -1,6 +1,5 @@
 /**
- * Example gated page. Reached at /settings — no auth logic lives here
- * because (protected)/_layout.tsx already wraps the subtree in <AuthGate>.
+ * Account settings — gated by (protected)/_layout.tsx AuthGate.
  */
 
 import { signOut, useUser } from 'deepspace'
@@ -10,14 +9,13 @@ export default function SettingsPage() {
   const { user } = useUser()
 
   return (
-    // No background on page wrappers — pages render into whatever the app's
-    // (app)/_layout provides (a plain background, or a raised panel), so they
-    // stay transparent and inherit it.
     <div className="min-h-full text-foreground">
       <div className="mx-auto max-w-2xl px-6 py-20">
-        <h1 className="mb-12 text-4xl font-bold tracking-tight">Settings</h1>
+        <h1 className="mb-12 font-[family-name:var(--font-display)] text-4xl tracking-tight">
+          Settings
+        </h1>
 
-        <section className="rounded-lg border border-border bg-card p-6">
+        <section className="border border-border bg-card p-6">
           <h2 className="mb-4 text-lg font-semibold">Your account</h2>
 
           <dl className="space-y-3 text-sm">

@@ -7,9 +7,9 @@ Turn a **destination + vibe** into a researched day-by-day itinerary with a gene
 ## Important path
 
 1. Sign in  
-2. **New sketch** → destination, vibe, days  
+2. **New sketch** → destination, vibe, pace, days  
 3. Watch live progress (search → plan → cover)  
-4. Open the itinerary and copy the public share link (`/s/:slug`)
+4. Open the itinerary (day overview + morning/afternoon/evening) and copy the public share link (`/s/:slug`)
 
 ## DeepSpace pieces
 
@@ -37,7 +37,3 @@ Deploy (clean git tree required):
 git add -A && git commit -m "…"
 npx deepspace deploy
 ```
-
-## Submission notes
-
-See [SUBMISSION.md](./SUBMISSION.md) for the portal writeup draft and your personal verification checklist.

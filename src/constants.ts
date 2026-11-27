@@ -1,5 +1,5 @@
-/** App name — replaced by the CLI during scaffolding */
-export const APP_NAME = 'tripsketch'
+/** Product name shown in the UI */
+export const APP_NAME = 'TripSketch'
 
 /** Immutable app identity — data scope keys to this, so renames never
  *  strand your records.

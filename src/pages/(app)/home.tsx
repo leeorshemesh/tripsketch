@@ -4,7 +4,9 @@ import { AuthOverlay } from 'deepspace'
 import { useState } from 'react'
 import { TripCover } from '../../components/TripCover'
 import {
+  PACE_LABELS,
   VIBE_LABELS,
+  type TripPace,
   type TripRecord,
   type TripVibe,
 } from '../../lib/trip-types'
@@ -82,6 +84,10 @@ export default function HomePage() {
         {records.map((r) => {
           const t = r.data
           const vibe = (t.vibe as TripVibe) in VIBE_LABELS ? VIBE_LABELS[t.vibe as TripVibe] : t.vibe
+          const pace =
+            t.pace && (t.pace as TripPace) in PACE_LABELS
+              ? PACE_LABELS[t.pace as TripPace]
+              : null
           return (
             <li key={r.recordId}>
               <Link
@@ -98,7 +104,8 @@ export default function HomePage() {
                     {t.title || t.destination}
                   </p>
                   <p className="text-sm text-muted-foreground">
-                    {t.destination} · {vibe} · {t.daysCount} days · {t.status}
+                    {t.destination} · {vibe}
+                    {pace ? ` · ${pace}` : ''} · {t.daysCount} days · {t.status}
                   </p>
                 </div>
               </Link>

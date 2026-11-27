@@ -16,7 +16,24 @@ export const tripsSchema: CollectionSchema = {
     {
       name: 'vibe',
       storage: 'text',
-      interpretation: { kind: 'select', options: ['foodie', 'outdoors', 'culture', 'chill'] },
+      interpretation: {
+        kind: 'select',
+        options: [
+          'foodie',
+          'outdoors',
+          'culture',
+          'chill',
+          'romance',
+          'nightlife',
+          'family',
+          'adventure',
+        ],
+      },
+    },
+    {
+      name: 'pace',
+      storage: 'text',
+      interpretation: { kind: 'select', options: ['relaxed', 'balanced', 'packed'] },
     },
     { name: 'daysCount', storage: 'number', interpretation: 'plain' },
     {

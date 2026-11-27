@@ -1,4 +1,81 @@
-import type { TripDay, TripSource } from '../lib/trip-types'
+import {
+  TIME_OF_DAY,
+  TIME_OF_DAY_LABELS,
+  type TimeOfDay,
+  type TripDay,
+  type TripSource,
+  type TripStop,
+} from '../lib/trip-types'
+
+function groupStopsByTime(stops: TripStop[]): Array<{ slot: TimeOfDay; stops: TripStop[] }> {
+  const buckets: Record<TimeOfDay, TripStop[]> = {
+    morning: [],
+    afternoon: [],
+    evening: [],
+  }
+  const unslotted: TripStop[] = []
+
+  for (const stop of stops) {
+    if (stop.timeOfDay && TIME_OF_DAY.includes(stop.timeOfDay)) {
+      buckets[stop.timeOfDay].push(stop)
+    } else {
+      unslotted.push(stop)
+    }
+  }
+
+  // Older trips without timeOfDay still render as a flat morning-ish list.
+  if (unslotted.length > 0 && TIME_OF_DAY.every((t) => buckets[t].length === 0)) {
+    return [{ slot: 'morning', stops: unslotted }]
+  }
+
+  const groups = TIME_OF_DAY.filter((t) => buckets[t].length > 0).map((slot) => ({
+    slot,
+    stops: buckets[slot],
+  }))
+
+  if (unslotted.length > 0) {
+    groups.push({ slot: 'afternoon', stops: unslotted })
+  }
+
+  return groups
+}
+
+function StopRow({ stop }: { stop: TripStop }) {
+  return (
+    <li className="relative pl-4 before:absolute before:left-0 before:top-2 before:h-1.5 before:w-1.5 before:rounded-full before:bg-[var(--trip-teal)]">
+      <div className="flex flex-wrap items-baseline gap-x-2 gap-y-0.5">
+        <p className="font-medium text-foreground">
+          {stop.url ? (
+            <a
+              href={stop.url}
+              target="_blank"
+              rel="noreferrer"
+              className="underline-offset-4 hover:underline"
+            >
+              {stop.name}
+            </a>
+          ) : (
+            stop.name
+          )}
+        </p>
+        {stop.duration ? (
+          <span className="text-xs tracking-wide text-muted-foreground uppercase">
+            {stop.duration}
+          </span>
+        ) : null}
+      </div>
+      {stop.note ? (
+        <p className="mt-1 text-sm leading-relaxed text-muted-foreground">{stop.note}</p>
+      ) : null}
+      {stop.tip ? (
+        <p className="mt-1.5 text-sm leading-relaxed text-[var(--trip-teal)]/90">
+          <span className="font-medium text-foreground/80">Tip · </span>
+          {stop.tip}
+        </p>
+      ) : null}
+    </li>
+  )
+}
 
 export function TripItinerary({
   days,
@@ -12,44 +89,44 @@ export function TripItinerary({
   }
 
   return (
-    <div className="space-y-10">
-      {days.map((day) => (
-        <section key={day.dayIndex} className="space-y-4">
-          <header className="flex items-baseline gap-3 border-b border-border pb-2">
-            <span className="font-[family-name:var(--font-display)] text-sm tracking-wide text-[var(--trip-teal)]">
-              Day {day.dayIndex}
-            </span>
-            <h3 className="font-[family-name:var(--font-display)] text-xl text-foreground">
-              {day.title}
-            </h3>
-          </header>
-          <ol className="space-y-4">
-            {day.stops.map((stop, i) => (
-              <li key={`${day.dayIndex}-${i}`} className="grid gap-1 sm:grid-cols-[1fr_auto]">
-                <div>
-                  <p className="font-medium text-foreground">
-                    {stop.url ? (
-                      <a
-                        href={stop.url}
-                        target="_blank"
-                        rel="noreferrer"
-                        className="underline-offset-4 hover:underline"
-                      >
-                        {stop.name}
-                      </a>
-                    ) : (
-                      stop.name
-                    )}
-                  </p>
-                  {stop.note ? (
-                    <p className="mt-1 text-sm leading-relaxed text-muted-foreground">{stop.note}</p>
-                  ) : null}
+    <div className="space-y-12">
+      {days.map((day) => {
+        const groups = groupStopsByTime(day.stops)
+        return (
+          <section key={day.dayIndex} className="space-y-5">
+            <header className="space-y-2 border-b border-border pb-3">
+              <div className="flex items-baseline gap-3">
+                <span className="font-[family-name:var(--font-display)] text-sm tracking-wide text-[var(--trip-teal)]">
+                  Day {day.dayIndex}
+                </span>
+                <h3 className="font-[family-name:var(--font-display)] text-xl text-foreground">
+                  {day.title}
+                </h3>
+              </div>
+              {day.overview ? (
+                <p className="max-w-2xl text-sm leading-relaxed text-muted-foreground sm:text-base">
+                  {day.overview}
+                </p>
+              ) : null}
+            </header>
+
+            <div className="space-y-6">
+              {groups.map(({ slot, stops }) => (
+                <div key={`${day.dayIndex}-${slot}`} className="space-y-3">
+                  <h4 className="text-xs font-medium tracking-[0.16em] text-muted-foreground uppercase">
+                    {TIME_OF_DAY_LABELS[slot]}
+                  </h4>
+                  <ol className="space-y-4 border-l border-border/80 ml-1.5">
+                    {stops.map((stop, i) => (
+                      <StopRow key={`${day.dayIndex}-${slot}-${i}`} stop={stop} />
+                    ))}
+                  </ol>
                 </div>
-              </li>
-            ))}
-          </ol>
-        </section>
-      ))}
+              ))}
+            </div>
+          </section>
+        )
+      })}
 
       {sources.length > 0 ? (
         <section className="border-t border-border pt-6">

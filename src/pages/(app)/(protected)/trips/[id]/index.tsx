@@ -5,9 +5,11 @@ import { GenerateProgress } from '../../../../../components/GenerateProgress'
 import { TripCover } from '../../../../../components/TripCover'
 import { TripItinerary } from '../../../../../components/TripItinerary'
 import {
+  PACE_LABELS,
   VIBE_LABELS,
   parseItinerary,
   parseSources,
+  type TripPace,
   type TripRecord,
   type TripVibe,
 } from '../../../../../lib/trip-types'
@@ -16,6 +18,8 @@ import { Button } from '@/components/ui'
 export default function TripDetailPage() {
   const { id } = useParams()
   const tripId = id ?? ''
+  // Recent list + client find — enough at the daily generate cap.
+  // A larger library would fetch by recordId instead.
   const { records, status, error } = useQuery<TripRecord>('trips', {
     orderBy: 'createdAt',
     orderDir: 'desc',
@@ -49,6 +53,10 @@ export default function TripDetailPage() {
   const days = parseItinerary(t.itineraryJson)
   const sources = parseSources(t.sourcesJson)
   const vibe = (t.vibe as TripVibe) in VIBE_LABELS ? VIBE_LABELS[t.vibe as TripVibe] : t.vibe
+  const pace =
+    t.pace && (t.pace as TripPace) in PACE_LABELS
+      ? PACE_LABELS[t.pace as TripPace]
+      : t.pace || null
   const shareUrl =
     typeof window !== 'undefined' ? `${window.location.origin}/s/${t.shareSlug}` : `/s/${t.shareSlug}`
 
@@ -103,7 +111,8 @@ export default function TripDetailPage() {
       />
       <div className="mx-auto max-w-3xl px-6 pt-8">
         <p className="text-sm tracking-wide text-muted-foreground uppercase">
-          {t.destination} · {vibe} · {t.daysCount} days
+          {t.destination} · {vibe}
+          {pace ? ` · ${pace}` : ''} · {t.daysCount} days
         </p>
         <h1 className="mt-2 font-[family-name:var(--font-display)] text-4xl text-foreground">
           {t.title}
